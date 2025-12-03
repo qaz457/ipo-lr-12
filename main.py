@@ -1,4 +1,6 @@
-from transport.company import TransportCompany, Truck, Client, Train
+
+from transport.company import TransportCompany, Truck, Client
+
 try:
     company = TransportCompany("Быстрая Доставка")
     
