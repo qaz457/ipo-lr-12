@@ -117,14 +117,12 @@ class TransportCompany:
         if not self.vehicles:
             print("✗ Нет доступного транспорта")
             return
-        
-        # Очищаем предыдущие загрузки
+
         self.clear_all_loads()
         
-        # Сортируем клиентов: VIP в первую очередь
+
         sorted_clients = sorted(self.clients, key=lambda c: (not c.is_vip, c.cargo_weight), reverse=True)
         
-        # Сортируем транспорт по грузоподъемности (от большего к меньшему)
         sorted_vehicles = sorted(self.vehicles, key=lambda v: v.capacity, reverse=True)
         
         distributed_count = 0
@@ -137,7 +135,6 @@ class TransportCompany:
         for client in sorted_clients:
             distributed = False
             
-            # Пробуем разместить в уже частично загруженном транспорте
             for vehicle in sorted_vehicles:
                 if vehicle.get_free_capacity() >= client.cargo_weight:
                     try:
@@ -151,11 +148,9 @@ class TransportCompany:
                     except ValueError:
                         continue
             
-            # Если не удалось разместить
             if not distributed:
                 not_distributed.append(client)
-        
-        # Вывод результатов
+
         print("\n" + "="*50)
         print("РЕЗУЛЬТАТЫ РАСПРЕДЕЛЕНИЯ")
         print("="*50)
