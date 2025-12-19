@@ -27,12 +27,10 @@ class Vehicle:
         self.clients_list.append(client.name)
     
     def clear_load(self):
-        """Очистить загрузку транспорта"""
         self.current_load = 0
         self.clients_list = []
     
     def get_free_capacity(self):
-        """Получить свободную грузоподъемность"""
         return self.capacity - self.current_load
     
     def __str__(self):
@@ -66,56 +64,52 @@ class TransportCompany:
         if not isinstance(vehicle, Vehicle):
             raise TypeError("Ожидается объект класса Vehicle")
         self.vehicles.append(vehicle)
-        print(f"✓ Транспорт {vehicle.vehicle_id} ({vehicle.type}) добавлен в компанию '{self.name}'")
+        print(f"Транспорт {vehicle.vehicle_id} ({vehicle.type}) добавлен в компанию '{self.name}'")
     
     def remove_vehicle(self, vehicle_id):
-        """Удалить транспорт по ID"""
+
         for i, vehicle in enumerate(self.vehicles):
             if vehicle.vehicle_id == vehicle_id:
                 removed = self.vehicles.pop(i)
                 print(f"✓ Транспорт {vehicle_id} удален")
                 return removed
-        print(f"✗ Транспорт с ID {vehicle_id} не найден")
+        print(f"Транспорт с ID {vehicle_id} не найден")
         return None
     
     def list_vehicles(self):
-        """Вернуть список всех транспортных средств"""
         return self.vehicles
     
     def list_available_vehicles(self):
-        """Вернуть список транспорта с свободной вместимостью"""
         return [v for v in self.vehicles if v.get_free_capacity() > 0]
     
     def add_client(self, client):
         if not isinstance(client, Client):
             raise TypeError("Можно добавлять только объекты класса Client")
         self.clients.append(client)
-        print(f"✓ Клиент {client.name} добавлен в компанию '{self.name}'")
+        print(f"Клиент {client.name} добавлен в компанию '{self.name}'")
     
     def remove_client(self, name):
-        """Удалить клиента по имени"""
         for i, client in enumerate(self.clients):
             if client.name == name:
                 removed = self.clients.pop(i)
-                print(f"✓ Клиент {name} удален")
+                print(f"Клиент {name} удален")
                 return removed
-        print(f"✗ Клиент с именем {name} не найден")
+        print(f"Клиент с именем {name} не найден")
         return None
     
     def clear_all_loads(self):
-        """Очистить все грузы со всех транспортных средств"""
         for vehicle in self.vehicles:
             vehicle.clear_load()
-        print("✓ Все грузы выгружены")
+        print("Все грузы выгружены")
     
     def optimize_cargo_distribution(self):
-        """Распределить грузы с минимальным использованием транспорта"""
+
         if not self.clients:
-            print("✗ Нет клиентов для распределения")
+            print("Нет клиентов для распределения")
             return
         
         if not self.vehicles:
-            print("✗ Нет доступного транспорта")
+            print("Нет доступного транспорта")
             return
 
         self.clear_all_loads()
@@ -128,7 +122,7 @@ class TransportCompany:
         distributed_count = 0
         not_distributed = []
         
-        print("\n" + "="*50)
+        print("="*50)
         print("НАЧАЛО РАСПРЕДЕЛЕНИЯ ГРУЗОВ")
         print("="*50)
         
@@ -142,7 +136,7 @@ class TransportCompany:
                         distributed = True
                         distributed_count += 1
                         vip_status = " (VIP)" if client.is_vip else ""
-                        print(f"✓ Груз клиента {client.name}{vip_status} ({client.cargo_weight}т) "
+                        print(f"Груз клиента {client.name}{vip_status} ({client.cargo_weight}т) "
                               f"размещен в {vehicle.type}е ID: {vehicle.vehicle_id}")
                         break
                     except ValueError:
@@ -151,31 +145,30 @@ class TransportCompany:
             if not distributed:
                 not_distributed.append(client)
 
-        print("\n" + "="*50)
+        print("="*50)
         print("РЕЗУЛЬТАТЫ РАСПРЕДЕЛЕНИЯ")
         print("="*50)
         
         if distributed_count > 0:
-            print(f"✓ Успешно распределено грузов: {distributed_count}/{len(self.clients)}")
+            print(f"Успешно распределено грузов: {distributed_count}/{len(self.clients)}")
         
         if not_distributed:
-            print(f"\n✗ Не удалось разместить {len(not_distributed)} груз(ов):")
+            print(f"Не удалось разместить {len(not_distributed)} груз(ов):")
             for client in not_distributed:
                 vip_status = "VIP " if client.is_vip else ""
                 print(f"  - {vip_status}{client.name}: {client.cargo_weight}т")
         
-        print("\nСостояние транспорта:")
+        print("Состояние транспорта:")
         used_vehicles = [v for v in self.vehicles if v.current_load > 0]
         if used_vehicles:
             for i, vehicle in enumerate(used_vehicles, 1):
                 utilization = (vehicle.current_load / vehicle.capacity) * 100
-                print(f"{i}. {vehicle} (загрузка: {utilization:.1f}%)")
+                print(f"{i}. {vehicle} (загрузка: {utilization}%)")
         else:
             print("  Транспорт не использован")
     
     def show_statistics(self):
-        """Показать статистику компании"""
-        print("\n" + "="*50)
+        print("="*50)
         print(f"СТАТИСТИКА КОМПАНИИ '{self.name}'")
         print("="*50)
         
@@ -186,22 +179,22 @@ class TransportCompany:
             for i, client in enumerate(self.clients, 1):
                 vip = " [VIP]" if client.is_vip else ""
                 print(f"{i}. {client.name}{vip}: {client.cargo_weight}т")
-            print(f"\nИтого: VIP клиентов: {vip_count}, Общий вес грузов: {total_cargo}т")
+            print(f"Итого: VIP клиентов: {vip_count}, Общий вес грузов: {total_cargo}т")
         else:
-            print("  Нет клиентов")
+            print("Нет клиентов")
         
-        print(f"\nТранспорт ({len(self.vehicles)}):")
+        print(f"Транспорт ({len(self.vehicles)}):")
         if self.vehicles:
             trucks = [v for v in self.vehicles if isinstance(v, Truck)]
             trains = [v for v in self.vehicles if isinstance(v, Train)]
             total_capacity = sum(v.capacity for v in self.vehicles)
             
-            print(f"  Грузовиков: {len(trucks)}")
-            print(f"  Поездов: {len(trains)}")
-            print(f"  Общая вместимость: {total_capacity}т")
+            print(f" Грузовиков: {len(trucks)}")
+            print(f" Поездов: {len(trains)}")
+            print(f" Общая вместимость: {total_capacity}т")
             
             for i, vehicle in enumerate(self.vehicles, 1):
                 free = vehicle.get_free_capacity()
                 print(f"{i}. {vehicle}")
         else:
-            print("  Нет транспорта")
+            print("Нет транспорта")
