@@ -1,212 +1,162 @@
-from transport import TransportCompany, Truck, Train, Client
 import sys
+from transport import TransportCompany, Truck, Train, Client
 
-def print_menu():
-    print("ГЛАВНОЕ МЕНЮ:")
-    print("1. Добавить транспортное средство")
+def menu():
+    print("\n=== МЕНЮ ===")
+    print("1. Добавить транспорт")
     print("2. Добавить клиента")
-    print("3. Просмотреть всю информацию")
-    print("4. Распределить грузы (оптимизация)")
-    print("5. Управление транспортом")
-    print("6. Управление клиентами")
-    print("7. Загрузить демо-данные")
-    print("8. Очистить все данные")
+    print("3. Показать всё")
+    print("4. Распределить грузы")
+    print("5. Управление")
+    print("6. Демо данные")
+    print("7. Очистить всё")
     print("0. Выход")
 
-def print_vehicle_menu():
-    print("ВЫБЕРИТЕ ТИП ТРАНСПОРТА:")
-    print("1. Грузовик")
-    print("2. Поезд")
-    print("0. Назад")
-
-def print_control_menu():
-    print("УПРАВЛЕНИЕ:")
-    print("1. Удалить транспорт")
-    print("2. Удалить клиента")
-    print("3. Очистить все грузы")
-    print("0. Назад")
-
-def create_company():
-    name = input("Введите название транспортной компании: ")
-    return TransportCompany(name)
-
-def vehicle_menu(company):
+def car_menu(company):
     while True:
-        print_vehicle_menu()
-        choice = input("Выберите действие: ")
+        print("\nДобавить транспорт:")
+        print("1. Грузовик")
+        print("2. Поезд")
+        print("0. Назад")
+        choice = input("Выбор: ")
         
-        if choice == "1": 
+        if choice == "1":
             try:
-                capacity = float(input("Введите грузоподъемность: "))
-                color = input("Введите цвет грузовика: ")
-                truck = Truck(capacity, color)
+                cap = float(input("Грузоподъемность: "))
+                color = input("Цвет: ")
+                truck = Truck(cap, color)
                 company.add_vehicle(truck)
-            except ValueError:
-                print("введите корректное число для грузоподъемности")
+                print(f"Добавлен грузовик {truck.vehicle_id}")
+            except:
+                print("Ошибка")
         
-        elif choice == "2": 
+        elif choice == "2":
             try:
-                capacity = float(input("Введите грузоподъемность: "))
-                cars = int(input("Введите количество вагонов: "))
-                train = Train(capacity, cars)
+                cap = float(input("Грузоподъемность: "))
+                cars = int(input("Вагонов: "))
+                train = Train(cap, cars)
                 company.add_vehicle(train)
-            except ValueError:
-                print("введите корректные числовые значения")
+                print(f"Добавлен поезд {train.vehicle_id}")
+            except:
+                print("Ошибка")
         
         elif choice == "0":
             break
-        
-        else:
-            print("Неверный выбор")
 
-def add_client_menu(company):
-    print("ДОБАВЛЕНИЕ КЛИЕНТА:")
-    name = input("Введите имя клиента: ")
-    
+def client_menu(company):
+    print("\nДобавить клиента:")
+    name = input("Имя: ")
     try:
-        cargo = float(input("Введите вес груза: "))
-        if cargo <= 0:
-            print("Вес груза должен быть положительным числом")
+        weight = float(input("Вес груза: "))
+        if weight <= 0:
+            print("Вес должен быть > 0")
             return
-    except ValueError:
-        print("введите корректное число для веса груза")
+    except:
+        print("Ошибка")
         return
     
-    vip = input("VIP клиент? (да/нет): ").lower()
-    is_vip = vip in ['да', 'yes', '1']
+    vip = input("VIP? (да/нет): ").lower()
+    is_vip = vip in ['да', 'yes', 'y', '1']
     
-    client = Client(name, cargo, is_vip)
+    client = Client(name, weight, is_vip)
     company.add_client(client)
+    print(f"Добавлен клиент {name}")
 
-def all_info(company):
-    company.show_statistics()
-
-def manage_vehicles_menu(company):
+def manage_menu(company):
     while True:
-        print("СПИСОК ТРАНСПОРТА:")
-        vehicles = company.list_vehicles()
-        if not vehicles:
-            print("  Нет транспортных средств")
-            return
+        print("\nУправление:")
+        print("1. Удалить транспорт")
+        print("2. Удалить клиента")
+        print("3. Очистить грузы")
+        print("0. Назад")
+        choice = input("Выбор: ")
         
-        for i, vehicle in enumerate(vehicles, 1):
-            print(f"{i}. {vehicle}")
-        
-        print_control_menu()
-        choice = input("Выберите действие: ")
-        
-        if choice == "1": 
+        if choice == "1":
             try:
-                vehicle_id = int(input("Введите ID транспорта для удаления: "))
-                company.remove_vehicle(vehicle_id)
-            except ValueError:
-                print("введите корректный ID")
+                vid = int(input("ID транспорта: "))
+                if company.remove_vehicle(vid):
+                    print("Удалено")
+                else:
+                    print("Не найден")
+            except:
+                print("Ошибка")
         
-        elif choice == "2": 
-            name = input("Введите имя клиента для удаления: ")
-            company.remove_client(name)
+        elif choice == "2":
+            name = input("Имя клиента: ")
+            if company.remove_client(name):
+                print("Удалено")
+            else:
+                print("Не найден")
         
-        elif choice == "3": 
+        elif choice == "3":
             company.clear_all_loads()
+            print("Грузы очищены")
         
         elif choice == "0":
             break
-        
-        else:
-            print("Неверный выбор")
 
-def load_data(company):
-    
-    vehicles = [
-        Truck(10.0, "синий"),
-        Truck(8.0, "красный"),
-        Truck(15.0, "зеленый"),
-        Train(50.0, 10),
-        Train(30.0, 6)
+def demo_data(company):
+    company.vehicles = [
+        Truck(10, "синий"),
+        Truck(8, "красный"),
+        Truck(15, "зеленый"),
+        Train(50, 10),
+        Train(30, 6)
     ]
     
-    for vehicle in vehicles:
-        company.add_vehicle(vehicle)
-    
-
-    clients = [
-        Client("Андрей", 2.5),
-        Client("Сергей", 1.4, is_vip=True),
-        Client("Мария", 3.0),
-        Client("Иван", 4.0, is_vip=True),
-        Client("Ольга", 5.5),
-        Client("Дмитрий", 2.0, is_vip=True),
-        Client("Екатерина", 7.0)
+    company.clients = [
+        Client("Иван", 5, True),
+        Client("Мария", 3),
+        Client("Петр", 7, True),
+        Client("Анна", 2),
+        Client("Сергей", 4),
+        Client("Ольга", 6)
     ]
     
-    for client in clients:
-        company.add_client(client)
-    
-    print("данные загружены успешно!")
-
-def clear_all_data(company):
-    confirm = input("Вы уверены, что хотите очистить все данные? (да/нет): ")
-    if confirm.lower() in ['да', 'yes', '1']:
-        company.vehicles.clear()
-        company.clients.clear()
-        print("Все данные очищены")
-    else:
-        print("Операция отменена")
+    print("Демо данные загружены")
 
 def main():
-    company = create_company()
+    name = input("Название компании: ")
+    company = TransportCompany(name)
     
     while True:
-        print(f"Компания: {company.name}")
-        print(f"Транспорт: {len(company.vehicles)} | Клиенты: {len(company.clients)}")
+        print(f"{company.name}")
+        print(f"Транспорт: {len(company.vehicles)}, Клиенты: {len(company.clients)}")
+        menu()
+        choice = input("Выбор: ")
         
-        print_menu()
-        choice = input("Выберите действие (0-8): ")
+        if choice == "1":
+            car_menu(company)
         
-        if choice == "1": 
-            vehicle_menu(company)
-        
-        elif choice == "2": 
-            add_client_menu(company)
+        elif choice == "2":
+            client_menu(company)
         
         elif choice == "3":
-            all_info(company)
+            company.show_statistics()
         
         elif choice == "4":
             company.optimize_cargo_distribution()
+            print("Грузы распределены")
         
-        elif choice == "5":  
-            manage_vehicles_menu(company)
+        elif choice == "5":
+            manage_menu(company)
         
-        elif choice == "6": 
-            print("СПИСОК КЛИЕНТОВ:")
-            if not company.clients:
-                print(" Нет клиентов")
-            else:
-                for i, client in enumerate(company.clients, 1):
-                    vip = " [VIP]" if client.is_vip else ""
-                    print(f"{i}. {client.name}{vip}: {client.cargo_weight}т")
-            
-  
-            name = input("Введите имя клиента для удаления (или Enter для отмены): ")
-            if name:
-                company.remove_client(name)
+        elif choice == "6":
+            demo_data(company)
         
         elif choice == "7":
-            load_data(company)
+            confirm = input("Очистить всё? (да/нет): ")
+            if confirm.lower() in ['да', 'yes', 'y']:
+                company.vehicles.clear()
+                company.clients.clear()
+                print("Данные очищены")
         
-        elif choice == "8": 
-            clear_all_data(company)
-        
-        elif choice == "0":  
-            print("end code")
-      
+        elif choice == "0":
+            print("Выход")
             sys.exit(0)
         
-        else:
-            print("Неверный выбор. Попробуйте снова.")
+        if choice not in ["0", "3"]:
+            input("Нажмите Enter...")
 
-        if choice not in ["0", "3", "4"]:
-            input("Нажмите Enter для продолжения...")
-
-main()
+if __name__ == "__main__":
+    main()
